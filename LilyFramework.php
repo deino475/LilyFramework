@@ -24,7 +24,7 @@ class Lily {
 				$events = 'index';
 				$params = array();
 			} else {
-				if ($this->check('/'.$this->parseURL($_GET['m'])[0])) {
+				if ($this->check($this->parseURL($_GET['m'])[0])) {
 					$parsedURL = $this->parseURL($_GET['m']);
 					$event = $parsedURL[0];
 					$params = $parsedURL[1];
@@ -34,7 +34,7 @@ class Lily {
 				}
 			}
 		}
-		$this->emit('/'.$event, $data = $params);
+		$this->emit($event, $data = $params);
 	}
 
 	public function model($name) {
@@ -42,7 +42,7 @@ class Lily {
 		return new $name;
 	}
 
-	public function view($name, $data = []) {
+	public function renderTemplate($name, $data = []) {
 		include 'views/'.$name.'.php';
 	}
 
