@@ -1,5 +1,5 @@
 <?php
-class Lily {
+class Lily implements View{
 	private $events = array();
 
 	public function route ($name, $function) {
@@ -42,12 +42,27 @@ class Lily {
 		return new $name;
 	}
 
-	public function renderTemplate($name, $data = []) {
+	public function action($name) {
+		include 'actions/'.$name.'.php';
+		return new $name;
+	}
+
+	public function view($name) {
 		include 'views/'.$name.'.php';
+		return new $name;
+	}
+
+	public function renderTemplate($name, $data = []) {
+		include 'templates/'.$name.'.php';
 	}
 
 	public function renderHTML($text) {
 		echo $text;
+	}
+
+	public function renderXML($data) {
+		header('Content-Type: text/xml;');
+		echo $data;
 	}
 
 	public function renderJSON($data) {
@@ -75,5 +90,43 @@ class Lily {
 		unset($data[0]);
 		$params = array_values($data);
 		return array($event, $params);
+	}
+}
+
+interface View {
+	function renderTemplate($name, $data = []);
+	function renderHTML($text);
+	function renderXML($data);
+	function renderJSON($data);
+	function renderCSV($data, $name = 'data');
+}
+
+interface ViewTemplate extends View {
+	function __invoke();
+}
+
+interface Action {
+	function __invoke();
+}
+
+class Session {
+	public function __construct() {
+		session_start();
+	}
+
+	public function get($name) {
+		return $_SESSION[$name];
+	}
+
+	public function set($key, $value) {
+		$_SESSION[$key] = $value;
+	}
+
+	public function is_set($key) {
+		return isset($_SESSION[$key]);
+	}
+
+	public function kill() {
+		session_destroy();
 	}
 }
