@@ -79,7 +79,7 @@ class Lily implements View{
 	}
 
 	public function redirectTo($name) {
-		header('Location: ?m='.$name);
+		header('Location: ?m=/'.$name);
 	}
 
 	public function parseURL($url) {
@@ -101,7 +101,7 @@ interface View {
 	function renderCSV($data, $name = 'data');
 }
 
-abstract class ViewTemplate extends View {
+abstract class ViewTemplate implements View {
 	public $data = array();
 	public function addData($key, $value) {
 		$this->data[$key] = $value;
@@ -132,7 +132,7 @@ abstract class ViewTemplate extends View {
 			fputcsv($output, $row);
 		}
 	}
-	
+
 	abstract function __invoke();
 }
 
@@ -140,24 +140,36 @@ abstract class Action {
 	abstract function __invoke();
 }
 
+
+
+/**
+Helper Classes 
+**/
+
 class Session {
-	public function __construct() {
+	public static function start() {
 		session_start();
 	}
 
-	public function get($name) {
+	public static function get($name) {
 		return $_SESSION[$name];
 	}
 
-	public function set($key, $value) {
+	public static function set($key, $value) {
 		$_SESSION[$key] = $value;
 	}
 
-	public function is_set($key) {
-		return isset($_SESSION[$key]);
-	}
-
-	public function kill() {
+	public static function kill() {
 		session_destroy();
+		echo 'Session: destroyed';
 	}
 }
+
+class Request {
+	public static function getRequest() { return $_SERVER['REQUEST_METHOD']; }
+	public static function isGet() { $_SERVER['REQUEST_METHOD'] == 'GET' ? 'true' : 'false';}
+	public static function isPost() { $_SERVER['REQUEST_METHOD'] == 'POST' ? 'true' : 'false';}
+	public static function isHead() { $_SERVER['REQUEST_METHOD'] == 'HEAD' ? 'true' : 'false';}
+	public static function isPut() { $_SERVER['REQUEST_METHOD'] == 'PUT' ? 'true' : 'false';}
+}
+
