@@ -101,12 +101,43 @@ interface View {
 	function renderCSV($data, $name = 'data');
 }
 
-interface ViewTemplate extends View {
-	function __invoke();
+abstract class ViewTemplate extends View {
+	public $data = array();
+	public function addData($key, $value) {
+		$this->data[$key] = $value;
+	}
+
+	public function renderTemplate($name, $data = []) {
+		include 'templates/'.$name.'.php';
+	}
+
+	public function renderHTML($text) {
+		echo $text;
+	}
+
+	public function renderXML($data) {
+		header('Content-Type: text/xml;');
+		echo $data;
+	}
+
+	public function renderJSON($data) {
+		echo json_encode($data);
+	}
+
+	public function renderCSV($data, $name = 'data') {
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename='.$name.'.csv');
+		$output = fopen('php://output', 'w');
+		foreach ($data as $row) {
+			fputcsv($output, $row);
+		}
+	}
+	
+	abstract function __invoke();
 }
 
-interface Action {
-	function __invoke();
+abstract class Action {
+	abstract function __invoke();
 }
 
 class Session {
